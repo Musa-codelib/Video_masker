@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+.DS_Store
+input_video/*
+output_video/*
+temp_frames/*
+raw_frames/*
+masked_output/*
+checkpoints/*.pt
+*.pyc
