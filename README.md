@@ -1,31 +1,28 @@
-
-
 ***
 
 # AI Video Masker Pro (SAM 2)
 A professional-grade rotoscoping toolkit for **DaVinci Resolve (Free/Studio)**. This tool uses Meta's **Segment Anything Model 2 (SAM 2)** to generate high-quality masks, optimized for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
 
 ## 🚀 Choose Your Workflow
-This repository provides two distinct workflows depending on your needs:
 
-### 1. Video-to-Video Workflow (`video_masker_v1.py`)
-**Best for:** Speed and simplicity. 
-- **Input:** A single video file (`.mp4` or `.mov`).
-- **Output:** A single masked video file (`.mp4`).
-- **Key Features:** 
-    - Automated FPS and Resolution detection.
-    - **Feathering Slider:** Built-in mask softness adjustment.
-    - **UI Status Bar:** On-screen instructions and processing feedback.
-    - **Lag-Free Interaction:** Optimized code that responds instantly to clicks.
+### 1. Image Sequence Workflow
+| Script | Use Case | Output |
+| :--- | :--- | :--- |
+| **`selector_v3.py`** | High-precision VFX / PNG Sequences | B&W JPEG Sequence |
 
-### 2. Image Sequence Workflow (`selector_v3.py`)
-**Best for:** High-precision VFX work or handling complex frame numbers.
-- **Input:** A folder of PNG, TIFF, or JPEG images.
-- **Output:** A folder of B&W JPEG masks.
-- **Key Features:**
-    - **Pre-Processor:** Automatically strips timeline prefixes (e.g., `Timeline 1_`) and zero-pads frames for perfect sequential sorting.
-    - **Auto-Conversion:** Instantly converts PNG/TIFF to JPEG for AI compatibility.
-    - **Workspace Janitor:** Automatically clears old masks before starting.
+### 2. Video-to-Video Workflow (B&W Masks)
+*Best for users who want to use the Fusion "Luma to Alpha" method.*
+| Script | UI Style | Output |
+| :--- | :--- | :--- |
+| **`video_masker_v1.py`** | **Simple:** Minimalist, distraction-free | B&W MP4 Video |
+| **`video_masker_v2.py`** | **Advanced:** HUD, instructions & status bar | B&W MP4 Video |
+
+### 3. Pro-Level Cutout Workflow (Transparent Alpha)
+*Best for users who want to bypass Fusion. Drag-and-drop transparency directly on the Edit Page.*
+| Script | UI Style | Output |
+| :--- | :--- | :--- |
+| **`video_masker_v3.py`** | **Simple:** Minimalist, distraction-free | ProRes 4444 MOV (Alpha) |
+| **`video_masker_v4.py`** | **Advanced:** HUD, instructions & status bar | ProRes 4444 MOV (Alpha) |
 
 ---
 
@@ -41,50 +38,52 @@ pip install -r requirements.txt
 pip install git+https://github.com/facebookresearch/segment-anything-2.git
 ```
 
-### 2. AI Model Checkpoint
+### 2. Install FFmpeg (Required for V3 & V4)
+To generate transparent ProRes 4444 videos, you must have FFmpeg installed:
+```bash
+brew install ffmpeg
+```
+
+### 3. AI Model Checkpoint
 1. Create a `checkpoints` folder.
 2. Download `sam2_hiera_small.pt` from the official SAM 2 repository.
 3. Place it inside the `checkpoints` folder.
-
-### 3. Folder Structure
-Ensure your directory looks like this:
-```text
-/AI_masker
-├── /input_video      <-- Place MP4/MOV here for video workflow
-├── /output_video     <-- Resulting MP4 video appears here
-├── /raw_frames       <-- Place Image Sequences here for image workflow
-├── /masked_output    <-- Resulting JPEG sequence appears here
-├── /checkpoints      <-- sam2_hiera_small.pt
-```
 
 ---
 
 ## 📖 Usage Guide
 
-### Using Video-to-Video (`video_masker_v1.py`)
+### Using Video Workflows (V1, V2, V3, V4)
 1. Export your clip from DaVinci Resolve into `/input_video`.
-2. Run `python video_masker_v1.py`.
-3. **Scrub** to the desired frame using the slider.
-4. **Left-Click** (Green) to select the object; **Right-Click** (Red) to exclude areas.
-5. Adjust the **Feather** slider for soft mask edges.
-6. Press **'P'** to propagate and export the final video.
+2. Run your preferred script (e.g., `python video_masker_v4.py`).
+3. **Interaction:** 
+    - **Left-Click (Green):** Select object.
+    - **Right-Click (Red):** Exclude areas.
+    - **Scrubber:** Move through time.
+4. Adjust the **Feather** slider to soften mask edges.
+5. Press **'P'** to propagate and export the result to `/output_video`.
 
 ### Using Image Sequence (`selector_v3.py`)
 1. Export a PNG/JPEG sequence from DaVinci Resolve into `/raw_frames`.
 2. Run `python selector_v3.py`.
-3. The script will automatically clean filenames and convert PNGs to JPEGs.
-4. Select your object and press **'P'** to process.
-5. The masks will be saved as a sequence in `/masked_output`.
+3. The script automatically sanitizes filenames and converts PNGs to JPEGs for the AI.
+4. Select your object and press **'P'**. Resulting masks appear in `/masked_output`.
 
 ---
 
-## 🎨 DaVinci Resolve Integration (Fusion)
-Regardless of the workflow, follow these steps in the **Fusion Page**:
-1. Connect the output of the Mask (MediaIn2) to the **Blue (Effect Mask)** input of your footage (MediaIn1).
-2. In the **MediaIn1 Inspector -> Settings**:
+## 🎨 DaVinci Resolve Integration
+
+### For B&W Masks (V1, V2, and Image Sequence)
+1. Drag the mask into your Media Pool and place it on the timeline above your footage.
+2. In the **Fusion Page**, connect the mask to the **Blue (Effect Mask)** input of your footage node.
+3. In the **Inspector -> Settings**:
     - Change **Channel** to **Luminance**.
     - Change **Mapping Mode** to **Stretch**.
-3. If using the Image Sequence, ensure the "Start Timecode" in **Clip Attributes** is set to `00:00:00:00`.
+
+### For Pro Cutouts (V3 and V4)
+1. Drag the `cutout_xxxx.mov` file from `/output_video` directly onto your **Edit Page** timeline.
+2. Place it on **Video Track 2** above your background.
+3. **No Fusion required.** The transparency is built-in.
 
 ---
 
@@ -93,17 +92,8 @@ Regardless of the workflow, follow these steps in the **Fusion Page**:
 | :--- | :--- |
 | **Left-Click** | Add selection point (Green) |
 | **Right-Click** | Add exclusion point (Red) |
-| **R** | Reset all selections |
+| **R** | Reset all selections (Advanced UI versions) |
 | **P** | Start AI Processing & Export |
 | **Q** | Quit Application |
 
 ***
-
-### How to update your GitHub with this:
-1. Copy the text above and save it as `README.md` in your folder.
-2. Run these commands:
-```bash
-git add README.md selector_v3.py video_masker_v1.py
-git commit -m "Updated README and added both Image and Video workflows"
-git push origin main
-```
