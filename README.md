@@ -99,7 +99,7 @@ brew install ffmpeg
 
 ## 📥 Download & Installation (macOS)
 
-1. Go to the [Releases](link-to-your-release-page) page and download `AI_Masker_Pro.zip`.
+1. Go to the [Releases](https://github.com/Musa-codelib/Video_masker/releases) page and download `AI_Masker_Pro.zip`.
 2. Unzip the file and move `AI_Masker_Pro.app` to your **Applications** folder.
 
 ### ⚠️ Important: Security Note
