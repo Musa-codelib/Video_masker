@@ -1,4 +1,3 @@
-***
 
 # AI Video Masker Pro (SAM 2)
 A professional-grade rotoscoping toolkit for **DaVinci Resolve (Free/Studio)**. This tool uses Meta's **Segment Anything Model 2 (SAM 2)** to generate high-quality masks, optimized for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
@@ -95,5 +94,3 @@ brew install ffmpeg
 | **R** | Reset all selections (Advanced UI versions) |
 | **P** | Start AI Processing & Export |
 | **Q** | Quit Application |
-
-***
