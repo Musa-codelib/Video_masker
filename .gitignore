@@ -8,3 +8,8 @@ raw_frames/*
 masked_output/*
 checkpoints/*.pt
 *.pyc
+dist/
+build/
+*.spec
+_temp_ai_workspace/
+checkpoints/*.pt
