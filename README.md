@@ -94,3 +94,23 @@ brew install ffmpeg
 | **R** | Reset all selections (Advanced UI versions) |
 | **P** | Start AI Processing & Export |
 | **Q** | Quit Application |
+
+---
+
+## 📥 Download & Installation (macOS)
+
+1. Go to the [Releases](link-to-your-release-page) page and download `AI_Masker_Pro.zip`.
+2. Unzip the file and move `AI_Masker_Pro.app` to your **Applications** folder.
+
+### ⚠️ Important: Security Note
+Because this app is not signed by a registered Apple Developer, macOS will block it by default. 
+
+**To open it:**
+1. **Right-Click** the app and select **Open**.
+2. A warning will appear; click **Open Anyway**.
+3. You only need to do this once.
+
+## 💻 Requirements
+- macOS 13.0 or newer.
+- Apple Silicon (M1, M2, M3).
+- **FFmpeg** must be installed via Homebrew (`brew install ffmpeg`) if you want to use the ProRes export feature.
