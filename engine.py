@@ -9,110 +9,146 @@ def get_resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 def run_masker_engine(input_path, output_dir, mode):
-    # Mac Stability: Set start method for AI multiprocessing
-    try:
-        import multiprocessing
-        multiprocessing.set_start_method('spawn', force=True)
-    except: pass
-
     device = torch.device("mps")
     checkpoint = get_resource_path("checkpoints/sam2_hiera_small.pt")
     model_cfg = "sam2_hiera_s.yaml"
     ffmpeg_bin = get_resource_path("ffmpeg")
 
-    temp_dir = Path(output_dir) / "_temp_ai_workspace"
+    temp_dir = Path(output_dir) / "_temp_mk_workspace"
     if temp_dir.exists(): shutil.rmtree(temp_dir)
     temp_dir.mkdir()
 
-    # 1. Extraction
+    # 1. Metadata & Extraction
     cap = cv2.VideoCapture(input_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    orig_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    orig_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
+    # Scale calculation for stability
+    scale = min(1.0, 1024 / max(orig_w, orig_h))
+    ai_w, ai_h = int(orig_w * scale), int(orig_h * scale)
+
     count = 0
     while True:
         ret, frame = cap.read()
         if not ret: break
-        cv2.imwrite(str(temp_dir / f"{count:08d}.jpg"), frame)
-        if mode == "prores": cv2.imwrite(str(temp_dir / f"orig_{count:08d}.png"), frame)
+        ai_frame = cv2.resize(frame, (ai_w, ai_h))
+        cv2.imwrite(str(temp_dir / f"{count:08d}.jpg"), ai_frame)
+        if mode == "prores": 
+            cv2.imwrite(str(temp_dir / f"orig_{count:08d}.png"), frame)
         count += 1
     cap.release()
 
-    # 2. AI Load
+    # 2. Load SAM 2
     predictor = build_sam2_video_predictor(model_cfg, checkpoint, device=device)
     inference_state = predictor.init_state(video_path=str(temp_dir))
+    
     frame_names = sorted([f.name for f in temp_dir.glob("*.jpg")])
-
-    # 3. Selector State
     st = {'f': 0, 'up': True, 'pts': {}, 'lbls': {}, 'msk': None, 'lf': -1, 'fth': 0}
 
     def click(event, x, y, flags, param):
+        # Map UI clicks (Full Size) to AI coordinates (Scaled Size)
+        ix, iy = int(x * scale), int(y * scale)
         if event == cv2.EVENT_LBUTTONDOWN:
-            st['pts'].setdefault(st['f'], []).append([x, y]); st['lbls'].setdefault(st['f'], []).append(1); st['up'] = True
+            st['pts'].setdefault(st['f'], []).append([ix, iy]); st['lbls'].setdefault(st['f'], []).append(1); st['up'] = True
         elif event == cv2.EVENT_RBUTTONDOWN:
-            st['pts'].setdefault(st['f'], []).append([x, y]); st['lbls'].setdefault(st['f'], []).append(0); st['up'] = True
+            st['pts'].setdefault(st['f'], []).append([ix, iy]); st['lbls'].setdefault(st['f'], []).append(0); st['up'] = True
 
     cv2.destroyAllWindows()
-    win = f"AI Masker Selector"
+    win = "Mk Masker Selector"
     cv2.namedWindow(win, cv2.WINDOW_GUI_NORMAL)
     cv2.createTrackbar("Frame", win, 0, total_frames - 1, lambda x: st.update({'f': x, 'up': True}))
     cv2.createTrackbar("Feather", win, 0, 50, lambda x: st.update({'fth': x}))
     cv2.setMouseCallback(win, click)
 
-    # 4. Interactive Loop
     while True:
         if st['f'] != st['lf']:
-            img = cv2.imread(str(temp_dir / frame_names[st['f']]))
+            img_to_show = cv2.imread(str(temp_dir / frame_names[st['f']]))
+            img_to_show = cv2.resize(img_to_show, (orig_w, orig_h))
             st['lf'] = st['f']
         
-        display = img.copy()
+        display = img_to_show.copy()
+        
         if st['up']:
             if st['f'] in st['pts'] and st['pts'][st['f']]:
-                _, _, logits = predictor.add_new_points_or_box(inference_state, st['f'], 1, np.array(st['pts'][st['f']], dtype=np.float32), np.array(st['lbls'][st['f']], dtype=np.int32))
-                st['msk'] = (logits[0] > 0.0).cpu().numpy().astype(np.uint8).squeeze()
-            else: st['msk'] = None
+                with torch.inference_mode():
+                    _, _, logits = predictor.add_new_points_or_box(
+                        inference_state, st['f'], 1, 
+                        np.array(st['pts'][st['f']], dtype=np.float32), 
+                        np.array(st['lbls'][st['f']], dtype=np.int32)
+                    )
+                
+                # --- STABILITY FIX FOR GRAINY MASK ---
+                # 1. Force the mask back to CPU immediately
+                # 2. Convert to Boolean then to 0-255 Uint8
+                mask_bool = (logits[0, 0] > 0.0).cpu().numpy()
+                mask_uint8 = (mask_bool * 255).astype(np.uint8)
+                
+                # 3. Resize small AI mask to original display size
+                st['msk'] = cv2.resize(mask_uint8, (orig_w, orig_h), interpolation=cv2.INTER_NEAREST)
+            else: 
+                st['msk'] = None
             st['up'] = False
 
         if st['msk'] is not None:
-            blue_m = np.zeros_like(display); blue_m[:] = [255, 0, 0]
-            display = cv2.addWeighted(display, 1.0, cv2.bitwise_and(blue_m, blue_m, mask=st['msk']), 0.6, 0)
+            # Create blue overlay
+            ov = np.zeros_like(display)
+            ov[:, :, 0] = 255 # Blue channel
+            # Apply the mask correctly (OpenCV bitwise needs 0-255)
+            mask_vis = cv2.bitwise_and(ov, ov, mask=st['msk'])
+            display = cv2.addWeighted(display, 1.0, mask_vis, 0.6, 0)
+            
+            # Draw points
             for i, pt in enumerate(st['pts'][st['f']]):
+                px, py = int(pt[0]/scale), int(pt[1]/scale)
                 c = (0, 255, 0) if st['lbls'][st['f']][i] == 1 else (0, 0, 255)
-                cv2.circle(display, (int(pt[0]), int(pt[1])), 5, c, -1)
+                cv2.circle(display, (px, py), 5, c, -1)
 
-        cv2.putText(display, f"Mode: {mode.upper()} | 'P' to Process", (15, 30), 1, 1.2, (255, 255, 255), 2)
+        cv2.putText(display, f"Mk Pro | Frame {st['f']} | 'P' to Process", (15, 35), 1, 1.5, (255, 255, 255), 2)
         cv2.imshow(win, display)
         
         k = cv2.waitKey(1) & 0xFF
         if k == ord('q'): break
         elif k == ord('p') and st['pts']:
-            # 5. Propagation
             segs = {}
-            for o_idx, _, o_logits in predictor.propagate_in_video(inference_state):
-                segs[o_idx] = (o_logits[0] > 0.0).cpu().numpy().astype(np.uint8).squeeze()
+            with torch.inference_mode():
+                # Forward Pass
+                for o_idx, _, o_logits in predictor.propagate_in_video(inference_state):
+                    segs[o_idx] = (o_logits[0] > 0.0).cpu().numpy().astype(bool)
+                # Backward Pass
+                for o_idx, _, o_logits in predictor.propagate_in_video(inference_state, reverse=True):
+                    segs[o_idx] = (o_logits[0] > 0.0).cpu().numpy().astype(bool)
             
-            # 6. Export
-            if mode == "prores":
-                for i in range(total_frames):
-                    orig = cv2.imread(str(temp_dir / f"orig_{i:08d}.png"))
-                    m = (segs[i] * 255)
-                    if st['fth'] > 0: m = cv2.GaussianBlur(m, (st['fth']*2+1, st['fth']*2+1), 0)
-                    b, g, r = cv2.split(orig)
-                    cv2.imwrite(str(temp_dir / f"rgba_{i:08d}.png"), cv2.merge([b, g, r, m.astype(np.uint8)]))
+            # --- EXPORT ---
+            print("💾 Compiling final frames...")
+            blank_mask = np.zeros((orig_h, orig_w), dtype=np.uint8)
+            for i in range(total_frames):
+                if i in segs:
+                    # Convert boolean mask to 255 and resize to original
+                    m_uint8 = (segs[i] * 255).astype(np.uint8).squeeze()
+                    mask = cv2.resize(m_uint8, (orig_w, orig_h), interpolation=cv2.INTER_LINEAR)
+                else:
+                    mask = blank_mask
+
+                if st['fth'] > 0:
+                    k_size = st['fth']*2+1
+                    mask = cv2.GaussianBlur(mask, (k_size, k_size), 0)
                 
+                if mode == "prores":
+                    orig = cv2.imread(str(temp_dir / f"orig_{i:08d}.png"))
+                    cv2.imwrite(str(temp_dir / f"rgba_{i:08d}.png"), cv2.merge([cv2.split(orig)[0], cv2.split(orig)[1], cv2.split(orig)[2], mask]))
+                else:
+                    if i == 0:
+                        out_v = cv2.VideoWriter(str(Path(output_dir)/f"mask_{Path(input_path).stem}.mp4"), cv2.VideoWriter_fourcc(*'mp4v'), fps, (orig_w, orig_h), False)
+                    out_v.write(mask)
+
+            if mode == "prores":
                 output_file = Path(output_dir) / f"cutout_{Path(input_path).stem}.mov"
                 subprocess.run([ffmpeg_bin, '-y', '-framerate', str(fps), '-i', str(temp_dir/'rgba_%08d.png'), 
                                 '-c:v', 'prores_videotoolbox', '-profile:v', '4', '-pix_fmt', 'ayuv64le', str(output_file)])
             else:
-                output_file = Path(output_dir) / f"mask_{Path(input_path).stem}.mp4"
-                out_v = cv2.VideoWriter(str(output_file), cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h), False)
-                for i in range(total_frames):
-                    m = (segs[i] * 255)
-                    if st['fth'] > 0: m = cv2.GaussianBlur(m, (st['fth']*2+1, st['fth']*2+1), 0)
-                    out_v.write(m.astype(np.uint8))
                 out_v.release()
             break
 
-    cv2.destroyAllWindows()
-    shutil.rmtree(temp_dir)
+    cv2.destroyAllWindows(); shutil.rmtree(temp_dir)
