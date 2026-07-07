@@ -57,7 +57,7 @@ class App:
     def check_system(self):
         missing = []
         if not os.path.exists(get_resource_path("ffmpeg")): missing.append("FFmpeg Engine")
-        if not os.path.exists(get_resource_path("checkpoints/sam2_hiera_small.pt")): missing.append("AI Weights")
+        if not os.path.exists(get_resource_path("checkpoints/sam2_hiera_tiny.pt")): missing.append("AI Weights")
         if not os.path.exists(get_resource_path("sam2_hiera_s.yaml")): missing.append("AI Config")
         if missing:
             messagebox.showerror("Error", "Missing assets:\n" + "\n".join(missing))
