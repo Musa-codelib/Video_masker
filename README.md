@@ -1,5 +1,5 @@
 # Mk Masker Pro (SAM 2)
-A professional-grade rotoscoping toolkit for **DaVinci Resolve (Free/Studio)**. Powered by Meta's **Segment Anything Model 2 (SAM 2)** and optimized specifically for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
+A professional-grade standalone rotoscoping/masking application. Powered by Meta's **Segment Anything Model 2 (SAM 2)** and optimized specifically for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
 
 ## 📥 Downloads (Standalone App)
 The easiest way to use the tool. Download the bundled `.app` for macOS Silicon:
@@ -54,15 +54,16 @@ pip install git+https://github.com/facebookresearch/segment-anything-2.git
 
 ---
 
-## 🎨 DaVinci Resolve Integration
+## 🎨 Mask Integration
 
 ### For Pro Cutouts (ProRes 4444)
+Works for all editing softwares supporting ProRes 4444
 1. Export your clip as an `.mp4` or `.mov`.
 2. Run **Mk Masker Pro** and select **ProRes 4444** mode.
-3. Drag the resulting `cutout_xxxx.mov` back into Resolve.
+3. Drag the resulting `cutout_xxxx.mov` back into editing software.
 4. Place it on **Track 2** above your background. **Transparency is automatic.**
 
-### For B&W Masks
+### For B&W Masks (Fusion - DaVinci Resolve specific)
 1. In the **Fusion Page**, connect the mask to the **Blue (Effect Mask)** input of your footage.
 2. In the **Inspector -> Settings**: Change **Channel** to **Luminance** and **Mapping Mode** to **Stretch**.
 
