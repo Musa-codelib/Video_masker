@@ -2,6 +2,8 @@ venv/
 __pycache__/
 .DS_Store
 input_video/*
+_working_chunk/*
+video_test_data/*
 output_video/*
 temp_frames/*
 raw_frames/*

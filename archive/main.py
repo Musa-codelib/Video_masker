@@ -15,25 +15,23 @@ def get_resource_path(relative_path):
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Mk Masker Pro v1.2")
+        self.root.title("Mk Masker Pro v1.1")
         self.root.geometry("500x600")
         self.root.resizable(False, False)
         
-        # Health Check
-        if not os.path.exists(get_resource_path("ffmpeg")):
-            messagebox.showerror("Error", "FFmpeg binary missing from bundle!")
-            sys.exit()
+        self.check_system()
 
-        # Branding
+        # Load Logo
         try:
-            img = Image.open(get_resource_path("logo.png")).resize((150, 150))
+            img = Image.open(get_resource_path("logo.png"))
+            img = img.resize((150, 150))
             self.logo_img = ImageTk.PhotoImage(img)
             tk.Label(root, image=self.logo_img).pack(pady=20)
         except:
-            tk.Label(root, text="Mk", font=("Arial", 40, "bold"), fg="#2ecc71").pack(pady=20)
+            tk.Label(root, text="[ Mk ]", font=("Arial", 30, "bold"), fg="#2ecc71").pack(pady=20)
 
         tk.Label(root, text="Mk Masker Pro", font=("Arial", 28, "bold")).pack()
-        tk.Label(root, text="Radiating Partition Engine v1.2", font=("Arial", 10), fg="gray").pack()
+        tk.Label(root, text="Pro Video Rotoscope Engine", font=("Arial", 10), fg="gray").pack()
 
         self.input_file = ""
         self.output_dir = ""
@@ -56,6 +54,15 @@ class App:
                             font=("Arial", 16, "bold"), height=2, width=25, command=self.start)
         self.btn.pack(pady=10)
 
+    def check_system(self):
+        missing = []
+        if not os.path.exists(get_resource_path("ffmpeg")): missing.append("FFmpeg Engine")
+        if not os.path.exists(get_resource_path("checkpoints/sam2_hiera_small.pt")): missing.append("AI Weights")
+        if not os.path.exists(get_resource_path("sam2_hiera_s.yaml")): missing.append("AI Config")
+        if missing:
+            messagebox.showerror("Error", "Missing assets:\n" + "\n".join(missing))
+            sys.exit()
+
     def set_in(self):
         self.input_file = filedialog.askopenfilename(filetypes=[("Video", "*.mp4 *.mov")])
         if self.input_file: self.lbl_in.config(text=os.path.basename(self.input_file))
@@ -66,7 +73,7 @@ class App:
 
     def start(self):
         if not self.input_file or not self.output_dir:
-            return messagebox.showerror("Error", "Please select paths first!")
+            return messagebox.showerror("Error", "Complete Steps 1 and 2!")
         self.root.withdraw()
         self.root.after(100, self.launch_ai)
 
@@ -75,7 +82,7 @@ class App:
             run_masker_engine(self.input_file, self.output_dir, self.mode.get())
             messagebox.showinfo("Success", "Mk Masker Process finished!")
         except Exception as e:
-            messagebox.showerror("Engine Error", f"Details: {str(e)}")
+            messagebox.showerror("Mk Engine Error", f"Details: {str(e)}")
             print(traceback.format_exc())
         finally:
             self.root.deiconify()
