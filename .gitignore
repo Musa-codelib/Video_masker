@@ -3,7 +3,7 @@ __pycache__/
 .DS_Store
 input_video/*
 _working_chunk/*
-archive/*
+video_test_data/*
 output_video/*
 temp_frames/*
 raw_frames/*
