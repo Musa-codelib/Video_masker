@@ -8,6 +8,11 @@ CHUNK_SIZE = 50
 def get_resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
+    if relative_path == "ffmpeg":
+        import shutil
+        sys_ffmpeg = shutil.which("ffmpeg")
+        if sys_ffmpeg:
+            return sys_ffmpeg
     return os.path.join(os.path.abspath("."), relative_path)
 
 def run_masker_engine(input_path, output_dir, mode):
@@ -17,8 +22,8 @@ def run_masker_engine(input_path, output_dir, mode):
     except: pass
 
     device = torch.device("mps")
-    checkpoint = get_resource_path("checkpoints/sam2_hiera_small.pt")
-    model_cfg = "sam2_hiera_s.yaml"
+    checkpoint = get_resource_path("checkpoints/sam2.1_hiera_tiny.pt")
+    model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
     ffmpeg_bin = get_resource_path("ffmpeg")
 
     temp_dir = Path(output_dir) / "_temp_mk_workspace"
@@ -75,7 +80,13 @@ def run_masker_engine(input_path, output_dir, mode):
             ov = np.zeros_like(disp); ov[:, :, 0] = 255
             disp = cv2.addWeighted(disp, 1.0, cv2.bitwise_and(ov, ov, mask=st['msk']), 0.6, 0)
         
-        cv2.putText(disp, f"Mk Pro | 'P' to Process", (10, 30), 1, 1.2, (255, 255, 255), 2)
+        overlay = disp.copy()
+        cv2.rectangle(overlay, (5, 5), (700, 200), (0, 0, 0), -1)
+        cv2.addWeighted(overlay, 0.75, disp, 0.25, 0, disp)
+        cv2.putText(disp, "Mk Masker Lite v1.2", (18, 46), 1, 1.8, (255, 255, 255), 2)
+        cv2.putText(disp, "L-Click: Add    R-Click: Remove", (18, 88), 1, 2, (0, 255, 0), 2)
+        cv2.putText(disp, "'R': Reset    'P': Process    'Q': Quit", (18, 132), 1, 2, (200, 200, 200), 2)
+        cv2.putText(disp, "SAM2.1 Tiny  |  MPS Accelerated  |  Apple Silicon", (18, 176), 1, 1.4, (0, 255, 255), 2)
         cv2.imshow(win, disp); k = cv2.waitKey(1) & 0xFF
         if k == ord('q'): break
         elif k == ord('r'):

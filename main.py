@@ -15,7 +15,7 @@ def get_resource_path(relative_path):
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Mk Masker Pro v1.2")
+        self.root.title("Mk Masker Pro v1.2 Lite")
         self.root.geometry("500x600")
         self.root.resizable(False, False)
         
@@ -33,7 +33,7 @@ class App:
             tk.Label(root, text="Mk", font=("Arial", 40, "bold"), fg="#2ecc71").pack(pady=20)
 
         tk.Label(root, text="Mk Masker Pro", font=("Arial", 28, "bold")).pack()
-        tk.Label(root, text="Radiating Partition Engine v1.2", font=("Arial", 10), fg="gray").pack()
+        tk.Label(root, text="Lite Radiating Engine v1.2", font=("Arial", 10), fg="gray").pack()
 
         self.input_file = ""
         self.output_dir = ""
