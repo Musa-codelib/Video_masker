@@ -1,27 +1,30 @@
-# Mk Masker Pro (SAM 2)
+# Mk Masker (SAM 2 / SAM 2.1)
 A professional-grade standalone rotoscoping/masking application. Powered by Meta's **Segment Anything Model 2 (SAM 2)** and optimized specifically for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
 
 ## 📥 Downloads (Standalone App)
 The easiest way to use the tool. Download the bundled `.app` for macOS Silicon:
 
-*   🚀 **[Mk Masker Pro v1.2.0 (Stable)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *Latest: Radiating Bundle Engine & 4K stability fix.*
-*   🧪 **[Mk Masker Pro v1.1.0 (Legacy)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.1.0)** — *Bi-Directional introduction.*
+*   🚀 **[Mk Masker Lite v1.2 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/latest)** — *SAM 2.1 Tiny | Lite Build | Faster & Smaller*
+*   🧪 **[Mk Masker Pro v1.2.0 (Stable)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *SAM 2 Small | Radiating Bundle Engine & 4K stability fix.*
+*   📎 **[Mk Masker Pro v1.1.0 (Legacy)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.1.0)** — *Bi-Directional introduction.*
 *   📎 **[Mk Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0.0)** — *Initial Release.*
 
 ---
 
 ## 🚀 Choose Your Workflow
 
-### 1. Unified Standalone App (`Mk Masker Pro 1.2.app`)
+### 1. Unified Standalone App (`Mk Masker Lite v1.2.app`)
 **Best for:** Most users. A complete GUI-based application that handles everything from file selection to final export.
 - Includes **ProRes 4444** and **B&W Mask** modes.
 - Powered by the **Radiating Bundle Engine** for infinite timeline support.
+- **SAM 2.1 Tiny** model — faster and smaller than the Pro build.
 - Branded interface with native macOS icons.
 
 ### 2. Video-to-Video Workflows (Python Scripts)
 | Script | Logic Style | Output |
 | :--- | :--- | :--- |
-| **`video_masker_v6.py`** | **Radiating Bundles** | ProRes 4444 or B&W Mask |
+| **`video_masker_v7.py`** | **Radiating Bundles (SAM 2.1 Tiny)** | ProRes 4444 or B&W Mask |
+| **`video_masker_v6.py`** | **Radiating Bundles (SAM 2 Small)** | ProRes 4444 or B&W Mask |
 | **`video_masker_v5.py`** | Bi-Directional | ProRes 4444 MOV (Alpha) |
 | **`video_masker_v1.py`** | Simple Pass | B&W MP4 Video |
 
@@ -49,8 +52,9 @@ pip install git+https://github.com/facebookresearch/segment-anything-2.git
 
 ### 2. Requirements
 - **macOS 13.0+** on **Apple Silicon**.
-- **FFmpeg** must be installed via Homebrew (`brew install ffmpeg`) for ProRes features.
-- Place `sam2_hiera_small.pt` in the `/checkpoints` folder.
+- **FFmpeg** must be installed via Homebrew (`brew install ffmpeg`) for ProRes features (dev mode only; the standalone app bundles ffmpeg).
+- For the **Lite** build: Place `sam2.1_hiera_tiny.pt` in `/checkpoints` and `sam2.1_hiera_t.yaml` in the repo root.
+- For the **Pro** build: Place `sam2_hiera_small.pt` in `/checkpoints` and `sam2_hiera_s.yaml` in the repo root.
 
 ---
 
@@ -82,5 +86,5 @@ Works for all editing softwares supporting ProRes 4444
 
 ### ⚠️ Security Note (macOS)
 Because this app is independently developed, macOS will block it on first launch.
-1. **Right-Click** `Mk Masker Pro 1.2.app` and select **Open**.
+1. **Right-Click** `Mk Masker Lite v1.2.app` and select **Open**.
 2. Click **Open Anyway** in the security popup.
