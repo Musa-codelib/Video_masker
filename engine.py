@@ -140,7 +140,14 @@ def run_masker_engine(input_path, output_dir, mode):
                     out_v.write(m)
 
             if mode == "prores":
-                subprocess.run([ffmpeg_bin, '-y', '-framerate', str(fps), '-i', str(temp_dir/'rgba_%08d.png'), '-c:v', 'prores_videotoolbox', '-profile:v', '4', '-pix_fmt', 'ayuv64le', str(Path(output_dir)/f"cutout_{Path(input_path).stem}.mov")])
-            else: out_v.release()
+                output_path = Path(output_dir) / f"cutout_{Path(input_path).stem}.mov"
+                try:
+                    subprocess.run([ffmpeg_bin, '-y', '-framerate', str(fps), '-i', str(temp_dir/'rgba_%08d.png'), '-c:v', 'prores_videotoolbox', '-profile:v', '4', '-pix_fmt', 'ayuv64le', str(output_path)], check=True)
+                except subprocess.CalledProcessError as e:
+                    raise RuntimeError(f"FFmpeg ProRes encoding failed: {e}") from e
+                if not output_path.exists():
+                    raise RuntimeError(f"FFmpeg completed but output file not found: {output_path}")
+            else:
+                out_v.release()
             break
     cv2.destroyAllWindows(); shutil.rmtree(temp_dir); shutil.rmtree(work_chunk_dir, ignore_errors=True)
