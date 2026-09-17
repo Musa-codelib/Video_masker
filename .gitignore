@@ -1,37 +1,39 @@
-# Python
+# ─── Python ───────────────────────────────────────────
 venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
 *.egg-info/
 *.egg
-dist/
 *.whl
+.Python
 
-# macOS
+# ─── Build Artifacts ──────────────────────────────────
+dist/
+build/
+
+# ─── macOS ────────────────────────────────────────────
 .DS_Store
 *.swp
 *.swo
 *~
 
-# IDE
+# ─── IDE ──────────────────────────────────────────────
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# Project specific
-input_video/*
-output_video/*
-_working_chunk/*
-_temp_mk_workspace/*
-temp_frames/*
-raw_frames/*
-masked_output/*
-video_test_data/*
-checkpoints/*.pt
+# ─── Runtime Directories ──────────────────────────────
+input_video/
+output_video/
+temp_frames/
+_working_chunk/
+_temp_mk_workspace/
+raw_frames/
+masked_output/
+video_test_data/
 
-# Archive (keep tracked but ignore contents)
-archive/*
+# ─── Model Weights ────────────────────────────────────
+checkpoints/*.pt
