@@ -1,59 +1,90 @@
-# Mk Masker
+# Mk Masker (SAM 2 / SAM 2.1)
+A professional-grade standalone rotoscoping/masking application. Powered by Meta's **Segment Anything Model 2 (SAM 2)** and optimized specifically for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
 
-AI-powered rotoscoping tool using Meta's SAM 2/2.1. Creates video masks and alpha cutouts on Apple Silicon.
+## 📥 Downloads (Standalone App)
+The easiest way to use the tool. Download the bundled `.app` for macOS Silicon:
 
-## Quick Start
+*   🚀 **[Mk Masker Lite v1.2 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/latest)** — *SAM 2.1 Tiny | Lite Build | Faster & Smaller*
+*   🧪 **[Mk Masker Pro v1.2.0 (Stable)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *SAM 2 Small | Radiating Bundle Engine & 4K stability fix.*
+*   📎 **[Mk Masker Pro v1.1.0 (Legacy)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.1.0)** — *Bi-Directional introduction.*
+*   📎 **[Mk Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0.0)** — *Initial Release.*
 
+---
+
+## 🚀 Choose Your Workflow
+
+### 1. Unified Standalone App (`Mk Masker Lite v1.2.app`)
+**Best for:** Most users. A complete GUI-based application that handles everything from file selection to final export.
+- Includes **ProRes 4444** and **B&W Mask** modes.
+- Powered by the **Radiating Bundle Engine** for infinite timeline support.
+- **SAM 2.1 Tiny** model — faster and smaller than the Pro build.
+- Branded interface with native macOS icons.
+
+### 2. Video-to-Video Workflows (Python Scripts)
+| Script | Logic Style | Output |
+| :--- | :--- | :--- |
+| **`video_masker_v7.py`** | **Radiating Bundles (SAM 2.1 Tiny)** | ProRes 4444 or B&W Mask |
+| **`video_masker_v6.py`** | **Radiating Bundles (SAM 2 Small)** | ProRes 4444 or B&W Mask |
+| **`video_masker_v5.py`** | Bi-Directional | ProRes 4444 MOV (Alpha) |
+| **`video_masker_v1.py`** | Simple Pass | B&W MP4 Video |
+
+---
+
+## 🛠️ Features & Stability
+*   **Radiating Bundle Engine (RBE):** Automatically partitions video into 50-frame bundles with a "Hidden State" handshake. This eliminates the `MPSGraph INT_MAX` error, allowing for the processing of 4K and extremely long clips.
+*   **Bi-Directional Tracking:** Select a "Hero Frame" anywhere in your clip; the AI tracks forward and backward simultaneously to cover the entire timeline.
+*   **Zero-Grain Sync:** Implements strict GPU-to-CPU synchronization to ensure the selection mask is solid and free of digital noise.
+*   **High-End Alpha:** Export ProRes 4444 videos with built-in transparency for "drag-and-drop" editing in the Resolve Edit Page.
+
+---
+
+## 📖 Installation (For Developers)
+
+### 1. Clone & Environment
 ```bash
-# Install
-python3 -m venv venv && source venv/bin/activate
+git clone https://github.com/Musa-codelib/Video_masker.git
+cd Video_masker
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 pip install git+https://github.com/facebookresearch/segment-anything-2.git
-
-# Download model weights to checkpoints/
-# - sam2.1_hiera_tiny.pt (Lite) or sam2_hiera_small.pt (Pro)
-
-# Run
-python main.py
 ```
 
-## Project Structure
+### 2. Requirements
+- **macOS 13.0+** on **Apple Silicon**.
+- **FFmpeg** must be installed via Homebrew (`brew install ffmpeg`) for ProRes features (dev mode only; the standalone app bundles ffmpeg).
+- For the **Lite** build: Place `sam2.1_hiera_tiny.pt` in `/checkpoints` and `sam2.1_hiera_t.yaml` in the repo root.
+- For the **Pro** build: Place `sam2_hiera_small.pt` in `/checkpoints` and `sam2_hiera_s.yaml` in the repo root.
 
-```
-├── main.py                 # GUI entry point
-├── engine.py               # Core Radiating Bundle Engine
-├── video_masker_v7.py      # Standalone script (SAM 2.1 Tiny)
-├── configs/                # Model YAML configs
-├── assets/                 # Logo files
-├── build/                  # PyInstaller specs
-├── checkpoints/            # Model weights (.gitignored)
-└── archive/                # Previous versions
-```
+---
 
-## Usage
+## 🎨 Mask Integration
 
-1. Launch `python main.py`
-2. Select input video (.mp4/.mov)
-3. Choose output folder
-4. Pick mode: **ProRes 4444** (alpha) or **B&W Mask**
-5. Click **LAUNCH MK SELECTOR**
-6. In selector window:
-   - **Left-click**: Add selection (green)
-   - **Right-click**: Add exclusion (red)
-   - **R**: Reset | **P**: Process | **Q**: Quit
+### For Pro Cutouts (ProRes 4444)
+Works for all editing softwares supporting ProRes 4444
+1. Export your clip as an `.mp4` or `.mov`.
+2. Run **Mk Masker Pro** and select **ProRes 4444** mode.
+3. Drag the resulting `cutout_xxxx.mov` back into editing software.
+4. Place it on **Track 2** above your background. **Transparency is automatic.**
 
-## Builds
+### For B&W Masks (Fusion - DaVinci Resolve specific)
+1. In the **Fusion Page**, connect the mask to the **Blue (Effect Mask)** input of your footage.
+2. In the **Inspector -> Settings**: Change **Channel** to **Luminance** and **Mapping Mode** to **Stretch**.
 
-```bash
-# Lite (SAM 2.1 Tiny - faster)
-pyinstaller "build/Mk Masker Lite.spec"
+---
 
-# Pro (SAM 2 Small - more accurate)
-pyinstaller "build/Mk Masker Pro 1.2.spec"
-```
+## ⌨️ Controls Summary
+| Key | Action |
+| :--- | :--- |
+| **Left-Click** | Add selection point (Green) |
+| **Right-Click** | Add exclusion point (Red) |
+| **R** | Reset all selections |
+| **P** | Start Radiating AI Process & Export |
+| **Q** | Quit Application |
 
-## Requirements
+---
 
-- macOS 13.0+ on Apple Silicon
-- Python 3.13
-- FFmpeg (for development; bundled in app)
+### ⚠️ Security Note (macOS)
+Because this app is independently developed, macOS will block it on first launch.
+1. **Right-Click** `Mk Masker Lite v1.2.app` and select **Open**.
+2. Click **Open Anyway** in the security popup.
