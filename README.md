@@ -1,36 +1,40 @@
-# Mk Masker (SAM 2 / SAM 2.1)
-A professional-grade standalone rotoscoping/masking application. Powered by Meta's **Segment Anything Model 2 (SAM 2)** and optimized specifically for **Apple Silicon (M1/M2/M3)** via Metal (MPS) acceleration.
+# Mk Masker Pro (SAM 2 / RVM)
 
-## 📥 Downloads (Standalone App)
-The easiest way to use the tool. Download the bundled `.app` for macOS Silicon:
+A professional-grade rotoscoping toolkit for DaVinci Resolve (Free/Studio). Powered by Meta's **Segment Anything Model 2 (SAM 2)** and **Robust Video Matting (RVM)**, optimized for **Apple Silicon (M1/M2/M3)**.
 
-*   🚀 **[Mk Masker Lite v1.2 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2-lite)** — *SAM 2.1 Tiny | Lite Build | Faster & Smaller*
-*   🧪 **[Mk Masker Pro v1.2.0 (Stable)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *SAM 2 Small | Radiating Bundle Engine & 4K stability fix.*
+## 📥 Downloads (Standalone Apps)
+
+*   🚀 **[Mk Masker Pro v2.0 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/latest)** — *Unified Release: SAM 2 Small, Tiny, & RVM Support | Retro OS UI | Universal Platform Support.*
+*   🧪 **[Mk Masker Lite v1.2](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2-lite)** — *SAM 2.1 Tiny | Lightweight | Fast.*
+*   🧪 **[Mk Masker Pro v1.2.0](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *SAM 2 Small | Radiating Bundle Engine | 4K Stable.*
 *   📎 **[Mk Masker Pro v1.1.0 (Legacy)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.1.0)** — *Bi-Directional introduction.*
-*   📎 **[AI Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0-beta)** — *Initial Release.*
+*   📎 **[AI Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0-beta)** — *Initial release.*
 
 ---
 
 ## 🚀 Choose Your Workflow
 
-### 1. Unified Standalone App (`Mk Masker Lite v1.2.app`)
-**Best for:** Most users. A complete GUI-based application that handles everything from file selection to final export.
-- Includes **ProRes 4444** and **B&W Mask** modes.
-- Powered by the **Radiating Bundle Engine** for infinite timeline support.
-- **SAM 2.1 Tiny** model — faster and smaller than the Pro build.
-- Branded interface with native macOS icons.
+### 1. Mk Masker Pro v2.0 (The Unified Experience)
+**Best for:** All users. A complete overhaul featuring a retro-inspired UI and integrated model support.
+- **Multi-Model Support:** Switch between SAM 2 (Small/Tiny) and RVM (Robust Video Matting) for human subjects.
+- **Retro OS UI:** A nostalgic, high-performance interface.
+- **Fit for All:** Optimized for stability across different workflows.
 
-### 2. Video-to-Video Workflows (Python Scripts)
+### 2. Mk Masker Lite v1.2 (Lightweight)
+**Best for:** Users wanting a fast, lightweight tool.
+- **SAM 2.1 Tiny** model — faster and smaller than the Pro build.
+- **Radiating Bundle Engine** for infinite timeline support.
+- **ProRes 4444** and **B&W Mask** modes.
+
+### 3. Video-to-Video Workflows (Python Scripts)
 | Script | Logic Style | Output |
 | :--- | :--- | :--- |
 | **`video_masker_v7.py`** | **Radiating Bundles (SAM 2.1 Tiny)** | ProRes 4444 or B&W Mask |
-| **`video_masker_v6.py`** | **Radiating Bundles (SAM 2 Small)** | ProRes 4444 or B&W Mask |
-| **`video_masker_v5.py`** | Bi-Directional | ProRes 4444 MOV (Alpha) |
-| **`video_masker_v1.py`** | Simple Pass | B&W MP4 Video |
 
 ---
 
 ## 🛠️ Features & Stability
+
 *   **Radiating Bundle Engine (RBE):** Automatically partitions video into 50-frame bundles with a "Hidden State" handshake. This eliminates the `MPSGraph INT_MAX` error, allowing for the processing of 4K and extremely long clips.
 *   **Bi-Directional Tracking:** Select a "Hero Frame" anywhere in your clip; the AI tracks forward and backward simultaneously to cover the entire timeline.
 *   **Zero-Grain Sync:** Implements strict GPU-to-CPU synchronization to ensure the selection mask is solid and free of digital noise.
