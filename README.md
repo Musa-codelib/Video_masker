@@ -4,10 +4,10 @@ A professional-grade standalone rotoscoping/masking application. Powered by Meta
 ## 📥 Downloads (Standalone App)
 The easiest way to use the tool. Download the bundled `.app` for macOS Silicon:
 
-*   🚀 **[Mk Masker Lite v1.2 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/latest)** — *SAM 2.1 Tiny | Lite Build | Faster & Smaller*
+*   🚀 **[Mk Masker Lite v1.2 (Latest)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2-lite)** — *SAM 2.1 Tiny | Lite Build | Faster & Smaller*
 *   🧪 **[Mk Masker Pro v1.2.0 (Stable)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — *SAM 2 Small | Radiating Bundle Engine & 4K stability fix.*
 *   📎 **[Mk Masker Pro v1.1.0 (Legacy)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.1.0)** — *Bi-Directional introduction.*
-*   📎 **[Mk Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0.0)** — *Initial Release.*
+*   📎 **[AI Masker Pro v1.0 (Beta)](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.0-beta)** — *Initial Release.*
 
 ---
 
