@@ -15,7 +15,7 @@ OUTPUT_DIR = BASE_DIR / "output_video"
 TEMP_DIR = BASE_DIR / "temp_frames"
 WORKING_CHUNK_DIR = BASE_DIR / "_working_chunk"
 CHECKPOINT = BASE_DIR / "checkpoints" / "sam2.1_hiera_tiny.pt"
-MODEL_CONFIG = "configs/sam2.1/sam2.1_hiera_t.yaml" # Use the 2.1 specific path
+MODEL_CONFIG = str(BASE_DIR / "configs" / "sam2.1_hiera_t.yaml") # Use the 2.1 specific path
 CHUNK_SIZE = 50
 
 device = torch.device("mps")

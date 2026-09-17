@@ -1,17 +1,37 @@
+# Python
 venv/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+dist/
+*.whl
+
+# macOS
 .DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Project specific
 input_video/*
-_working_chunk/*
-video_test_data/*
 output_video/*
+_working_chunk/*
+_temp_mk_workspace/*
 temp_frames/*
 raw_frames/*
 masked_output/*
+video_test_data/*
 checkpoints/*.pt
-*.pyc
-dist/
-build/
-*.spec
-_temp_ai_workspace/
-checkpoints/*.pt
+
+# Archive (keep tracked but ignore contents)
+archive/*

@@ -26,7 +26,7 @@ class App:
 
         # Branding
         try:
-            img = Image.open(get_resource_path("logo.png")).resize((150, 150))
+            img = Image.open(get_resource_path("assets/logo.png")).resize((150, 150))
             self.logo_img = ImageTk.PhotoImage(img)
             tk.Label(root, image=self.logo_img).pack(pady=20)
         except:

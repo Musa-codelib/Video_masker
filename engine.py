@@ -23,7 +23,7 @@ def run_masker_engine(input_path, output_dir, mode):
 
     device = torch.device("mps")
     checkpoint = get_resource_path("checkpoints/sam2.1_hiera_tiny.pt")
-    model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
+    model_cfg = get_resource_path("configs/sam2.1_hiera_t.yaml")
     ffmpeg_bin = get_resource_path("ffmpeg")
 
     temp_dir = Path(output_dir) / "_temp_mk_workspace"
