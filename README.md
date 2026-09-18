@@ -6,7 +6,7 @@ A professional-grade AI rotoscoping and background removal toolkit for video edi
 
 ## 📥 Downloads (Standalone Apps)
 
-- 🚀 **[Mk Masker Pro v2.1 (Latest DMG)](https://github.com/Musa-codelib/Video_masker/releases/latest)** — _Input & Output File Pickers | Bundled FFmpeg 8.1 | Non-Blocking AI Server & Frame Accuracy Fixes._
+- 🚀 **[Mk Masker Pro v2.1 (Latest DMG)](https://github.com/Musa-codelib/Video_masker/releases/tag/v2.1)** — _Input & Output File Pickers | Bundled FFmpeg 8.1 | Non-Blocking AI Server & Frame Accuracy Fixes._
 - 📦 **[Mk Masker Pro v2.0](https://github.com/Musa-codelib/Video_masker/releases/tag/v2.0)** — _Retro OS UI | Unified Engine: SAM 2 Small, Tiny & RVM Matting | ProRes 4444 Export | Socket.IO Desktop Architecture._
 - 🧪 **[Mk Masker Lite v1.2](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2-lite)** — _SAM 2.1 Tiny | Lightweight | Fast._
 - 🧪 **[Mk Masker Pro v1.2.0](https://github.com/Musa-codelib/Video_masker/releases/tag/v1.2.0)** — _SAM 2 Small | Radiating Bundle Engine | 4K Stable._
